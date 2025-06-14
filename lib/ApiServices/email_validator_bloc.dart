@@ -15,6 +15,8 @@ class EmailValidatorBloc extends Bloc<EmailValidatorEvent, EmailValidatorState> 
       try {
         String url = "${ApiConstants.baseUrl}?email=${event.email}";
 
+        developer.log(url);
+
         final response = await http.get(
           Uri.parse(url),
           headers: {
@@ -25,17 +27,28 @@ class EmailValidatorBloc extends Bloc<EmailValidatorEvent, EmailValidatorState> 
         );
 
         developer.log('response body: ${response.body}');
+        developer.log('response statusCode: ${response.statusCode}');
 
         if(response.statusCode == 200 || response.statusCode == 201) {
           final responseData = jsonDecode(response.body);
-          emit(EmailValidatorSuccessState(true));
-        } else {
-          emit(EmailValidatorErrorState('errorMessage'));
-        }
+          final isExist = (responseData['is_exist']?.toString().toLowerCase() == "true");
 
+          if (isExist) {
+            emit(EmailValidatorSuccessState("✅ The email address exists.", responseData: responseData));
+          } else {
+            emit(EmailValidatorErrorState("❌ The email address does not exist."));
+          }
+        }
+        else if(response.statusCode == 404 || response.statusCode == 400) {
+          final responseData = jsonDecode(response.body);
+          String responseMessage = responseData['message'];
+          emit(EmailValidatorErrorState(responseMessage));
+        } else if(response.statusCode >= 500) {
+          emit(EmailValidatorGatewayError());
+        }
       } catch(e) {
         developer.log('catch error: $e');
-
+        emit(EmailValidatorErrorState('Something went wrong. Please try again later.'));
       }
     });
   }

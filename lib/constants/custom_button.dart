@@ -1,3 +1,4 @@
+import 'package:email_checker/Utils/font_styles.dart';
 import 'package:flutter/material.dart';
 import '../Utils/app_colors.dart';
 import '../Utils/app_constants.dart';
@@ -13,16 +14,16 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: Responsive.screenWidth(context) * 0.8,
-      height: 50,
+      height: Responsive.screenHeight(context) * 0.055,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.buttonColor,
+          backgroundColor: AppColors.brandNewBorder,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.borderRadius),
           ),
         ),
         onPressed: onPressed,
-        child: Text(text, style: const TextStyle(fontSize: 16)),
+        child: Text(text, style: FTextStyle.normal),
       ),
     );
   }

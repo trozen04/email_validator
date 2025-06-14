@@ -30,6 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
     double width = Responsive.screenWidth(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Center(
         child: Image.asset(ImageAssets.appIcon, width: width * 0.6)
       ),
