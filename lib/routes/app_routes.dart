@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../Screens/history_screen.dart';
 import '../Utils/screen_names.dart';
 import '../screens/splash_screen.dart';
 import '../screens/home_screen.dart';
@@ -16,6 +17,7 @@ class AppRoutes {
       ScreenNames.processing: (context) => const ProcessingScreen(),
       ScreenNames.results: (context) => const ResultsScreen(),
       ScreenNames.singleEmail: (context) => const SingleEmailScreen(),
+      ScreenNames.history:  (context) => const HistoryScreen(),
     };
   }
 }

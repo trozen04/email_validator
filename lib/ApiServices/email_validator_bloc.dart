@@ -13,12 +13,12 @@ class EmailValidatorBloc extends Bloc<EmailValidatorEvent, EmailValidatorState> 
     on<EmailValidatorEmailHandler>((event, emit) async {
       emit(EmailValidatorLoadingState());
       try {
-        String url = "${ApiConstants.baseUrl}?email=${event.email}";
-
-        developer.log(url);
+        final uri = Uri.parse(ApiConstants.baseUrl).replace(queryParameters: {
+          'email': event.email,
+        });
 
         final response = await http.get(
-          Uri.parse(url),
+          uri,
           headers: {
             'accept': 'application/json',
             'Content-Type': 'application/json',
@@ -26,8 +26,6 @@ class EmailValidatorBloc extends Bloc<EmailValidatorEvent, EmailValidatorState> 
           },
         );
 
-        developer.log('response body: ${response.body}');
-        developer.log('response statusCode: ${response.statusCode}');
 
         if(response.statusCode == 200 || response.statusCode == 201) {
           final responseData = jsonDecode(response.body);
@@ -47,7 +45,7 @@ class EmailValidatorBloc extends Bloc<EmailValidatorEvent, EmailValidatorState> 
           emit(EmailValidatorGatewayError());
         }
       } catch(e) {
-        developer.log('catch error: $e');
+
         emit(EmailValidatorErrorState('Something went wrong. Please try again later.'));
       }
     });

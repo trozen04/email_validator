@@ -5,4 +5,5 @@ class ScreenNames {
   static const String processing = '/processing';
   static const String results = '/results';
   static const String singleEmail = '/single-email';
+  static const String history = '/history';
 }

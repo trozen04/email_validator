@@ -1,26 +1,66 @@
-import 'dart:typed_data';
+import 'dart:io';
+import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'dart:io';
 import 'CustomSnackbar.dart';
 
 class SharePopup extends StatelessWidget {
-  final Uint8List qrImageBytes;
+  final String content;
 
-  const SharePopup({super.key, required this.qrImageBytes});
+  const SharePopup({super.key, required this.content});
 
-  Future<void> _shareImage(BuildContext context, String appName) async {
+  Future<void> _shareFile(BuildContext context, String appName) async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final file = await File('${tempDir.path}/qr_share.png').create();
-      await file.writeAsBytes(qrImageBytes);
+      final file = await File('${tempDir.path}/emails.txt').create();
+      await file.writeAsString(content);
 
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'Here is my QR Code via QREviX',
-      );
+      if (Platform.isAndroid) {
+        String? packageName;
+        switch (appName) {
+          case 'WhatsApp':
+            packageName = 'com.whatsapp';
+            break;
+          case 'Facebook':
+            packageName = 'com.facebook.katana';
+            break;
+          case 'Instagram':
+            packageName = 'com.instagram.android';
+            break;
+          case 'More':
+            await Share.shareXFiles(
+              [XFile(file.path)],
+              text: 'Here are the emails via QREviX',
+            );
+
+            return;
+        }
+
+        if (packageName != null) {
+          final intent = AndroidIntent(
+            action: 'action_send',
+            package: packageName,
+            type: 'text/plain',
+            arguments: {
+              'android.intent.extra.STREAM': file.path,
+              'android.intent.extra.TEXT': 'Here are the emails via QREviX',
+            },
+          );
+          await intent.launch().catchError((e) {
+            CustomSnackbar.show(context,
+                message: '$appName not installed!', isSuccess: false);
+            return e;
+          });
+        }
+      } else {
+        // iOS or other platforms: use share_plus
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: 'Here are the emails via QREviX',
+        );
+      }
     } catch (e) {
       CustomSnackbar.show(context, message: 'Something went wrong!', isSuccess: false);
     }
@@ -99,7 +139,7 @@ class SharePopup extends StatelessWidget {
         required double fontSize,
       }) {
     return GestureDetector(
-      onTap: () => _shareImage(context, label),
+      onTap: () => _shareFile(context, label),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

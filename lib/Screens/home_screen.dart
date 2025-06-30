@@ -1,4 +1,6 @@
+import 'package:email_checker/Utils/font_styles.dart';
 import 'package:email_checker/Utils/image_assets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Utils/app_colors.dart';
 import '../Utils/screen_names.dart';
@@ -15,19 +17,44 @@ class HomeScreen extends StatelessWidget {
     double width = Responsive.screenWidth(context);
 
     return Scaffold(
-      backgroundColor: Colors.white70,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Email Validator'),
+        title: Text('Email Validator', style: FTextStyle.normal,),
         backgroundColor: AppColors.brandNewBorder,
         centerTitle: true,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pushNamed(context, '/history'),
+            child: Icon(Icons.history, color: Colors.white),
+          ),
+          SizedBox(width: width * 0.03,)
+        ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(height * 0.03),
+        padding: EdgeInsets.symmetric(vertical: height * 0.015, horizontal: width * 0.04),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Image.asset(ImageAssets.appIcon, width: width * 0.5),
-            SizedBox(height: height * 0.01),
+            IntrinsicWidth(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: height * 0.015, horizontal: width * 0.1),
+                decoration: BoxDecoration(
+                  color: AppColors.brandNewBorder,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(CupertinoIcons.mail, color: Colors.white, size: width * 0.25),
+                    Text('MailVity', style: FTextStyle.heading),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: height * 0.03),
             CustomButton(
               text: 'Upload CSV File',
               onPressed: () {
